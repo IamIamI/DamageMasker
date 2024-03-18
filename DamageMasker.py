@@ -22,12 +22,8 @@ import os
 import sys
 import math
 
-# Check if the script is running with Python 3, this first one seems to not work?? 
-if sys.version_info.major < 3:
-	print("\nError: This script requires Python 3. Please run it with a Python 3 interpreter.\n\n")
-	sys.exit(1)
-# Check if the script is running with Python 3
-if int(sys.version[:1]) < 3:
+# Check if the script is running with Python 3 since there is some python3 specific print statement further down the script
+if sys.version_info.major < 3 or int(sys.version[:1]) < 3:
 	print("\nError: This script requires Python 3. Please run it with a Python 3 interpreter.\n\n")
 	sys.exit(1)
 
