@@ -17,7 +17,6 @@
 # Example: python SSLib_Masker.py --input_file Sample.processed.bam --output_file Sample_Hardmasked_Filtered.bam --mapq_cutoff 37 --len_cutoff 25
 
 # Comment: Use at your own discression, created for personal use
-#
 
 import os
 import sys
@@ -28,7 +27,7 @@ if sys.version_info.major < 3:
 	print("\nError: This script requires Python 3. Please run it with a Python 3 interpreter.\n\n")
 	sys.exit(1)
 # Check if the script is running with Python 3
-if not sys.version_info[:1] == (3):
+if int(sys.version[:1]) < 3:
 	print("\nError: This script requires Python 3. Please run it with a Python 3 interpreter.\n\n")
 	sys.exit(1)
 
