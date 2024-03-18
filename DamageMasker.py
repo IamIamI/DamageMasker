@@ -21,13 +21,12 @@
 import os
 import sys
 import math
+import argparse
 
 # Check if the script is running with Python 3 since there is some python3 specific print statement further down the script
 if sys.version_info.major < 3 or int(sys.version[:1]) < 3:
 	print("\nError: This script requires Python 3. Please run it with a Python 3 interpreter.\n\n")
 	sys.exit(1)
-
-import argparse
 
 # Check if the pysam library is installed
 try:
