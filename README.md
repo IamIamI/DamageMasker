@@ -44,4 +44,4 @@ options:
 ```
 
 An overview of the expected results of each method
-![alt text](https://github.com/IamIamI/Bioinformatics_scripts/blob/master/Python/ssLib_masker.jpg)
+![](https://github.com/IamIamI/DamageMasker/DamageMasker.png)
