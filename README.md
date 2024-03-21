@@ -44,4 +44,4 @@ options:
 ```
 
 An overview of the expected results of each method
-![](https://github.com/IamIamI/DamageMasker/DamageMasker.png)
+![.](https://github.com/IamIamI/DamageMasker/blob/main/DamageMasker.png)
