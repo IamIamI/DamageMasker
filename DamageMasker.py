@@ -23,6 +23,13 @@ import sys
 import math
 import argparse
 
+# Set scoring variables 
+nuc_fwd_dmg = {}
+nuc_rev_dmg = {}
+nuc_tot_dmg = {}
+nuc_tot_ins = {}
+nuc_total = {}
+
 # Check if the script is running with Python 3 since there is some python3 specific print statement further down the script
 if sys.version_info.major < 3 or int(sys.version[:1]) < 3:
 	print("\nError: This script requires Python 3. Please run it with a Python 3 interpreter.\n\n")
@@ -72,14 +79,44 @@ def process_sam_bam(in_file, out_file, input_file, ref_file, output_file, mapq_c
 
 			if masking == "R":
 				# Load the reference sequence
-				reference_seq = reference_dict[read.reference_name][read.reference_start:read.reference_start+len(read_sequence)]
+				reference_seq = reference_dict[read.reference_name][read.reference_start:read.reference_end] # Get reference sequence
+
+				# Deal with indels (annoying!!!)
+				if len(read.cigartuples)>1 :
+					pos_slider=0 # The cigar tuples give match (0), insertion (1) and deletion (2) information in tuples
+					# and example would be [(0, 16), (2, 1), (0, 60)]. Here there are 16 matches, 1 deletion (of 1bp) in the read, and 60 more matches
+					# Or [(0, 1), (1, 1), (0, 74)]. Here there is one match, 1 insertion (of additional nucleotide), and 74 more matches
+					for cigar in read.cigartuples:
+						if cigar[0] == 0 : 
+							pos_slider += cigar[1]
+						elif cigar[0] == 1 : # Add spacer to reference if a insertion occured in the read
+							toggle=1
+							reference_seq.seq = reference_seq.seq[:pos_slider] + ("-"*cigar[1]) + reference_seq.seq[pos_slider:]
+							pos_slider += cigar[1]
+						elif cigar[0] == 2 : # Add spacer to read if a deletion occured in the read
+							read_sequence = read_sequence[:pos_slider] + ("-"*cigar[1]) + read_sequence[pos_slider:]
+							pos_slider += cigar[1]
 
 				# Forward read
 				if not read.is_reverse:
 					modified_sequence = ''.join(['N' if ref == 'C' and read == 'T' else read for ref, read in zip(reference_seq, read_sequence)])
+					modified_sequence_calc = ''.join(['X' if ref == 'C' and read == 'T' else read for ref, read in zip(reference_seq, read_sequence)])
 				# Reverse read
 				else:
 					modified_sequence = ''.join(['N' if ref == 'G' and read == 'A' else read for ref, read in zip(reference_seq, read_sequence)])
+					modified_sequence_calc = ''.join(['Y' if ref == 'G' and read == 'A' else read for ref, read in zip(reference_seq, read_sequence)])
+				modified_sequence_calc = ''.join(['Z' if ref != read and not read in ['X','Y','-'] else read for ref, read in zip(reference_seq, read_sequence)])
+
+				# Print read mismatch statistics, broken down to "C>T, G>A, indels, and total amount including regular mismatches
+				nuc_tot_ins[str(modified_sequence_calc.count('-'))] = nuc_tot_ins.get(str(modified_sequence_calc.count('-')), 0) + 1
+				nuc_fwd_dmg[str(modified_sequence_calc.count('X'))] = nuc_fwd_dmg.get(str(modified_sequence_calc.count('X')), 0) + 1
+				nuc_rev_dmg[str(modified_sequence_calc.count('Y'))] = nuc_rev_dmg.get(str(modified_sequence_calc.count('Y')), 0) + 1
+				nuc_tot_dmg[str(modified_sequence_calc.count('X') + modified_sequence_calc.count('Y'))] = nuc_tot_dmg.get(str(modified_sequence_calc.count('X') + modified_sequence_calc.count('Y')), 0) + 1
+				num_total = modified_sequence_calc.count('X') + modified_sequence_calc.count('Y') + modified_sequence_calc.count('Z') + modified_sequence_calc.count('-')
+				nuc_total[str(num_total)] = nuc_total.get(str(num_total), 0) + 1
+
+				# Remove the gap spacers before saving the read back to the newly made SAM/BAM file
+				modified_sequence = modified_sequence.replace('-', '')
 
 			elif masking == "H":
 				# Forward read
@@ -142,6 +179,12 @@ def main():
 			return
 	
 	sam_bam_picker(args.input_file, args.ref_file, args.output_file, args.mapq_cutoff, args.len_cutoff, args.masking, args.edge_count)
+
+	if args.masking == "R":
+		with open(args.output_file+"_stats.txt", "a") as o:	# Output an additional stats tsv file containing "edit distance"
+			print(f"count\tindels\tfwd_dmg\trev_dmg\ttot_dmg\ttot_mismatch\n", file=o)
+			for i in range(0,10):
+				print(f"'{i}'\t'{nuc_tot_ins.get(str(i), 0)}'\t'{nuc_fwd_dmg.get(str(i), 0)}'\t'{nuc_rev_dmg.get(str(i), 0)}'\t'{nuc_tot_dmg.get(str(i), 0)}'\t'{nuc_total.get(str(i), 0)}'\n", file=o)
 
 if __name__ == "__main__":
 	main()
