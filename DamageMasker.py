@@ -100,19 +100,21 @@ def process_sam_bam(in_file, out_file, input_file, ref_file, output_file, mapq_c
 				# Forward read
 				if not read.is_reverse:
 					modified_sequence = ''.join(['N' if ref == 'C' and read == 'T' else read for ref, read in zip(reference_seq, read_sequence)])
-					modified_sequence_calc = ''.join(['X' if ref == 'C' and read == 'T' else read for ref, read in zip(reference_seq, read_sequence)])
+					calc_CT = modified_sequence.count('N') # Calculate number of C>T transversions in read for scoring
+					nuc_fwd_dmg[str(calc_CT)] = nuc_fwd_dmg.get(str(calc_CT), 0) + 1
 				# Reverse read
 				else:
 					modified_sequence = ''.join(['N' if ref == 'G' and read == 'A' else read for ref, read in zip(reference_seq, read_sequence)])
-					modified_sequence_calc = ''.join(['Y' if ref == 'G' and read == 'A' else read for ref, read in zip(reference_seq, read_sequence)])
-				modified_sequence_calc = ''.join(['Z' if ref != read and not read in ['X','Y','-'] else read for ref, read in zip(reference_seq, read_sequence)])
+					calc_GA = modified_sequence.count('N') # Calculate number of A<G transversions in read for scoring
+					nuc_rev_dmg[str(calc_GA)] = nuc_rev_dmg.get(str(calc_GA), 0) + 1
+				calc_indel= read_sequence.count('-') # Calculate number of indels in read for scoring
+				# Calculate number of other mismatch types in read for scoring
+				calc_MM = ''.join(['Z' if ref != read and not read in ['X','Y','-'] else read for ref, read in zip(reference_seq, read_sequence)]).count('Z')
 
 				# Print read mismatch statistics, broken down to "C>T, G>A, indels, and total amount including regular mismatches
-				nuc_tot_ins[str(modified_sequence_calc.count('-'))] = nuc_tot_ins.get(str(modified_sequence_calc.count('-')), 0) + 1
-				nuc_fwd_dmg[str(modified_sequence_calc.count('X'))] = nuc_fwd_dmg.get(str(modified_sequence_calc.count('X')), 0) + 1
-				nuc_rev_dmg[str(modified_sequence_calc.count('Y'))] = nuc_rev_dmg.get(str(modified_sequence_calc.count('Y')), 0) + 1
-				nuc_tot_dmg[str(modified_sequence_calc.count('X') + modified_sequence_calc.count('Y'))] = nuc_tot_dmg.get(str(modified_sequence_calc.count('X') + modified_sequence_calc.count('Y')), 0) + 1
-				num_total = modified_sequence_calc.count('X') + modified_sequence_calc.count('Y') + modified_sequence_calc.count('Z') + modified_sequence_calc.count('-')
+				nuc_tot_ins[str(calc_indel)] = nuc_tot_ins.get(str(calc_indel), 0) + 1
+				nuc_tot_dmg[str(modified_sequence.count('N'))] = nuc_tot_dmg.get(str(modified_sequence.count('N')), 0) + 1
+				num_total = modified_sequence.count('N') + calc_indel + calc_MM
 				nuc_total[str(num_total)] = nuc_total.get(str(num_total), 0) + 1
 
 				# Remove the gap spacers before saving the read back to the newly made SAM/BAM file
