@@ -232,7 +232,7 @@ def main():
 			print(f"Analysis for {args.input_file}, total reads analyzed: {nuc_total['Total']}\n", file=o, end="")
 			print(f"count\tfwd_reads_dmg\tfwd_reads_indels\tfwd_reads_other_mismatches\tfwd_reads_mismatches_total\t", file=o, end="")
 			print(f"rev_reads_dmg\trev_reads_indels\trev_reads_other_mismatches\trev_reads_mismatches_total\t", file=o, end="")
-			print(f"total\n", file=o)
+			print(f"tot_reads_dmg\ttot_reads_indels\ttot_reads_other_mismatches\ttot_reads_mismatches_total\n", file=o, end="")
 			for i in range(0,10):
 				print(f"{i}\t", file=o, end="")
 				print(f"{nuc_fwd_dmg.get(str(i), 0)}\t{nuc_fwd_ins.get(str(i), 0)}\t{nuc_fwd_mm.get(str(i), 0)}\t{nuc_fwd_tot.get(str(i), 0)}\t", file=o, end="")
