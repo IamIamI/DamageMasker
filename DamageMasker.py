@@ -8,27 +8,33 @@
 # Description: Used to mask thymine and adenine sites in ancient SAM/BAM files created from single stranded libraries, to prevent damage from being incorporated into genotyping.
 
 # Usability: When setting to hardmasking, al T's on the forward strand and all A's on the reverse strand are masked regardless of anything else
-# Example: python SSLib_Masker.py --input_file Sample.processed.bam --masking R --ref_file Reference.fasta --output_file Sample_RefGuidedmasked.bam
+# Example: python DamageMasker.py --input_file Sample.processed.bam --masking R --ref_file Reference.fasta --output_file Sample_RefGuidedmasked.bam
 # Usability: When setting the script to Reference guided masking, all T's on the forward strand are masked if the reference has a C, and all A's on the reverse strand will be masked if the reference has a G on that position
-# Example: pythonSSLib_Masker.py --input_file Sample.processed.bam --masking H --output_file Sample_Hardmasked.bam
+# Example: python DamageMasker.py --input_file Sample.processed.bam --masking H --output_file Sample_Hardmasked.bam
 # Usability: When using edge masking, only T's on the 5' and 3' of the forward read are masked, and only A's on 5' and 3' of the reverse strand will be masked, the user can specify how many bases into these edges the masking runs.
-# Example: python SSLib_Masker.py --input_file Sample.processed.bam --masking E --edge_count 3 --output_file Sample_Edgemasked.bam
-# Optional: The user can also remove reads that are too short (default 0bp), or are not mapping with a high enough MapQ score (default 0)
-# Example: python SSLib_Masker.py --input_file Sample.processed.bam --output_file Sample_Hardmasked_Filtered.bam --mapq_cutoff 37 --len_cutoff 25
+# Example: python DamageMasker.py --input_file Sample.processed.bam --masking E --edge_count 3 --output_file Sample_Edgemasked.bam
+# Optional: The user can also remove reads that are too short (default 0bp), or are not mapping with a high enough MapQ score (default 0) using the 'Filtering' option (-m F)
+# Example: python DamageMasker.py --input_file Sample.processed.bam --output_file Sample_OnlyFiltered.bam --masking F --mapq_cutoff 37 --len_cutoff 25
 
-# Comment: Use at your own discression, created for personal use
+# If python > v3 is installed as python3, make sure to run the software as 'python3 DamageMasker.py --input_file etc'
+
+# Comment: Some features are experimental, and have had limited validation.
 
 import os
 import sys
 import math
 import argparse
 
-# Set scoring variables 
+# Set scoring variables for reference guided masking
 nuc_fwd_dmg = {}
 nuc_rev_dmg = {}
-nuc_tot_dmg = {}
-nuc_tot_ins = {}
-nuc_total = {}
+nuc_fwd_ins = {}
+nuc_rev_ins = {}
+nuc_fwd_mm = {}
+nuc_rev_mm = {}
+nuc_fwd_tot = {}
+nuc_rev_tot = {}
+nuc_total = {"Total":0}
 
 # Check if the script is running with Python 3 since there is some python3 specific print statement further down the script
 if sys.version_info.major < 3 or int(sys.version[:1]) < 3:
@@ -49,24 +55,41 @@ except ImportError:
 	print("\nError: This script requires biopython to be installed.\nTry \'pip install biopython\' or \'pip3 install biopython\' (depending on your setup) to install it.\n\n")
 	sys.exit(1)
 
+# Generate an STDout with the settings chosen, for reproducibility, and troubleshooting purposes
+def settings_summary_printer(args):
+	print(f"\nDamageMasker will now process {args.input_file}, using the following settings;")
+	if args.masking == "R" :
+		print(f"Masking type: Reference guided")
+		print(f"Reference used: {args.ref_file}")
+	if args.masking == "E" :
+		print(f"Masking type: Edge masking (default)")
+		print(f"Number of edge bases masked: {args.edge_count}")
+	if args.masking == "H" :
+		print(f"Masking type: Hard masking")
+	if not args.mapq_cutoff == 0 :
+		print(f"Remove reads with MapQ score below: {args.mapq_cutoff}")
+	if not args.mapq_cutoff == 0 :
+		print(f"Remove reads reads with length below: {args.len_cutoff} bp")
+	print(f"Masked SAM/BAM will be saved to: {args.output_file}")
+	if args.masking == "R" :
+		print(f"Additional edit distance analysis is stored to: {args.output_file}_stats.tsv")
+	print() # Just a paragraph breaker
+
+
 # Determine if a bam or sam is provided
 def sam_bam_picker(input_file,ref_file,output_file,mapq_cutoff,len_cutoff,masking,edge_count):
 
-	type_testing = input_file.lower()
-	# Check if the read is mapped and MAPQ is above the cutoff
-	if '.sam' in type_testing :
+	# Check if  is mapped and MAPQ is above the cutoff
+	if '.sam' in input_file :
 		with pysam.AlignmentFile(input_file, 'r') as sam, pysam.AlignmentFile(output_file, 'w', header=sam.header) as output_sam:
 			process_sam_bam(sam, output_sam, input_file, ref_file, output_file, mapq_cutoff, len_cutoff, masking,edge_count)
 
-	elif '.bam' in type_testing :
+	elif '.bam' in input_file :
 		with pysam.AlignmentFile(input_file, 'rb') as bam, pysam.AlignmentFile(output_file, 'wb', header=bam.header) as output_bam:
 			process_sam_bam(bam, output_bam, input_file, ref_file, output_file, mapq_cutoff, len_cutoff, masking,edge_count)
 
-	else:
-		print(f"\nError: It could not be determined if '{input_file}' is a SAM or BAM formatted file. Make sure the file has a .bam or .sam extention.\n\n")
-		sys.exit(1)
-
 def process_sam_bam(in_file, out_file, input_file, ref_file, output_file, mapq_cutoff, len_cutoff, masking,edge_count):
+
 	if masking == "R":
 		# Load the reference genome
 		reference_dict = SeqIO.index(ref_file, "fasta")
@@ -74,6 +97,7 @@ def process_sam_bam(in_file, out_file, input_file, ref_file, output_file, mapq_c
 	# Go through the reads in the FASTA
 	for read in in_file:
 		if not read.is_unmapped and read.mapping_quality >= mapq_cutoff and read.query_length >= len_cutoff:
+			nuc_total['Total'] += 1 # Just counting the number of processed reads
 			read_sequence = read.query_sequence # Get read sequence
 			modified_qualities = read.query_qualities # Obtain the original quality values
 
@@ -102,20 +126,25 @@ def process_sam_bam(in_file, out_file, input_file, ref_file, output_file, mapq_c
 					modified_sequence = ''.join(['N' if ref == 'C' and read == 'T' else read for ref, read in zip(reference_seq, read_sequence)])
 					calc_CT = modified_sequence.count('N') # Calculate number of C>T transversions in read for scoring
 					nuc_fwd_dmg[str(calc_CT)] = nuc_fwd_dmg.get(str(calc_CT), 0) + 1
+
+					calc_indel= read_sequence.count('-') # Calculate number of indels in read for scoring
+					nuc_fwd_ins[str(calc_indel)] = nuc_fwd_ins.get(str(calc_indel), 0) + 1
+					calc_MM = ''.join(['Z' if ref != read and not read in ['X','Y','-'] else read for ref, read in zip(reference_seq, read_sequence)]).count('Z')
+					nuc_fwd_mm[str(calc_MM)] = nuc_fwd_mm.get(str(calc_MM), 0) + 1
+					num_total = modified_sequence.count('N') + calc_indel + calc_MM
+					nuc_fwd_tot[str(num_total)] = nuc_fwd_tot.get(str(num_total), 0) + 1
 				# Reverse read
 				else:
 					modified_sequence = ''.join(['N' if ref == 'G' and read == 'A' else read for ref, read in zip(reference_seq, read_sequence)])
 					calc_GA = modified_sequence.count('N') # Calculate number of A<G transversions in read for scoring
 					nuc_rev_dmg[str(calc_GA)] = nuc_rev_dmg.get(str(calc_GA), 0) + 1
-				calc_indel= read_sequence.count('-') # Calculate number of indels in read for scoring
-				# Calculate number of other mismatch types in read for scoring
-				calc_MM = ''.join(['Z' if ref != read and not read in ['X','Y','-'] else read for ref, read in zip(reference_seq, read_sequence)]).count('Z')
 
-				# Print read mismatch statistics, broken down to "C>T, G>A, indels, and total amount including regular mismatches
-				nuc_tot_ins[str(calc_indel)] = nuc_tot_ins.get(str(calc_indel), 0) + 1
-				nuc_tot_dmg[str(modified_sequence.count('N'))] = nuc_tot_dmg.get(str(modified_sequence.count('N')), 0) + 1
-				num_total = modified_sequence.count('N') + calc_indel + calc_MM
-				nuc_total[str(num_total)] = nuc_total.get(str(num_total), 0) + 1
+					calc_indel= read_sequence.count('-') # Calculate number of indels in read for scoring
+					nuc_rev_ins[str(calc_indel)] = nuc_rev_ins.get(str(calc_indel), 0) + 1
+					calc_MM = ''.join(['Z' if ref != read and not read in ['X','Y','-'] else read for ref, read in zip(reference_seq, read_sequence)]).count('Z')
+					nuc_rev_mm[str(calc_MM)] = nuc_rev_mm.get(str(calc_MM), 0) + 1
+					num_total = modified_sequence.count('N') + calc_indel + calc_MM
+					nuc_rev_tot[str(num_total)] = nuc_rev_tot.get(str(num_total), 0) + 1
 
 				# Remove the gap spacers before saving the read back to the newly made SAM/BAM file
 				modified_sequence = modified_sequence.replace('-', '')
@@ -144,6 +173,9 @@ def process_sam_bam(in_file, out_file, input_file, ref_file, output_file, mapq_c
 					modified_seq_R = ''.join(['N' if read == 'A' else read for read in read_sequence[len(read_sequence)-mask_numb:]])
 					modified_sequence = modified_seq_L + read_sequence[mask_numb:len(read_sequence)-mask_numb] + modified_seq_R
 
+			elif masking == "F": # If masking is F it won't need to do anything, filtering already happend upstream of the function
+				modified_sequence=read.query_sequence
+
 			else:
 				print(f"\nError: The masking setting '{masking}' is not recognized. Please use \'S\' for SoftMasking, \'H\' for HardMasking, and \'E\' for EdgeMasking.\n\n")
 				sys.exit(1)
@@ -155,7 +187,7 @@ def process_sam_bam(in_file, out_file, input_file, ref_file, output_file, mapq_c
 
 def main():
 	parser = argparse.ArgumentParser(description='Mask a SAM/BAM file for deaminated bases based on reference genome. The script can softmask, hardmask and edgemask', add_help=False)
-	parser.add_argument('-m', '--masking', default="H", metavar='', help='Change masking behaviour.\n\'R\' for Reference based Masking.\n\'H\' for HardMasking.\n\'E\' for EdgeMasking. (default: Hardmasking)')
+	parser.add_argument('-m', '--masking', default="H", metavar='', help='Change masking behaviour.\n\'R\' for Reference based Masking.\n\'H\' for HardMasking.\n\'E\' for EdgeMasking. (default: Hardmasking)\n\'F\' for Filtering.')
 	parser.add_argument('-i', '--input_file', metavar='', help='Input BAM or SAM file (mandatory)')
 	parser.add_argument('-r', '--ref_file', default="NA", metavar='', help='Input reference genome file in FASTA format (mandatory for --masking \'R\')')
 	parser.add_argument('-e', '--edge_count', type=int, default=5, metavar='', help='Number of 5\' edges to be masked if --masking \'E\' is turned on (default: 5)')
@@ -170,6 +202,18 @@ def main():
 		print(f"\nError: Input SAM/BAM file '{args.input_file}' not found.\n\n")
 		return
 		# Check if the input BAM file exists
+	extention_test = args.input_file.lower()
+	if '.sam' in extention_test :
+		if not args.output_file.endswith(".sam") :
+			args.output_file += ".sam"
+	elif '.bam' in extention_test :
+		if not args.output_file.endswith(".bam") :
+			args.output_file += ".bam"
+	else:
+		print(f"\nError: It could not be determined if '{input_file}' is a SAM or BAM formatted file. Make sure the file has a .sam or .bam extention.\n\n")
+		sys.exit(1)
+
+	settings_summary_printer(args)
 
 	if args.masking == "R":
 		if not args.ref_file =="NA":
@@ -181,12 +225,21 @@ def main():
 			return
 	
 	sam_bam_picker(args.input_file, args.ref_file, args.output_file, args.mapq_cutoff, args.len_cutoff, args.masking, args.edge_count)
+	print(f"\nFinished processing {args.input_file}, {nuc_total['Total']} reads processed\n\n")
 
 	if args.masking == "R":
 		with open(args.output_file+"_stats.txt", "a") as o:	# Output an additional stats tsv file containing "edit distance"
-			print(f"count\tindels\tfwd_dmg\trev_dmg\ttot_dmg\ttot_mismatch\n", file=o)
+			print(f"Analysis for {args.input_file}, total reads analyzed: {nuc_total['Total']}\n", file=o, end="")
+			print(f"count\tfwd_reads_dmg\tfwd_reads_indels\tfwd_reads_other_mismatches\tfwd_reads_mismatches_total\t", file=o, end="")
+			print(f"rev_reads_dmg\trev_reads_indels\trev_reads_other_mismatches\trev_reads_mismatches_total\t", file=o, end="")
+			print(f"total\n", file=o)
 			for i in range(0,10):
-				print(f"'{i}'\t'{nuc_tot_ins.get(str(i), 0)}'\t'{nuc_fwd_dmg.get(str(i), 0)}'\t'{nuc_rev_dmg.get(str(i), 0)}'\t'{nuc_tot_dmg.get(str(i), 0)}'\t'{nuc_total.get(str(i), 0)}'\n", file=o)
-
+				print(f"{i}\t", file=o, end="")
+				print(f"{nuc_fwd_dmg.get(str(i), 0)}\t{nuc_fwd_ins.get(str(i), 0)}\t{nuc_fwd_mm.get(str(i), 0)}\t{nuc_fwd_tot.get(str(i), 0)}\t", file=o, end="")
+				print(f"{nuc_rev_dmg.get(str(i), 0)}\t{nuc_rev_ins.get(str(i), 0)}\t{nuc_rev_mm.get(str(i), 0)}\t{nuc_rev_tot.get(str(i), 0)}\t", file=o, end="")
+				print(f"{(nuc_fwd_dmg.get(str(i), 0)+nuc_rev_dmg.get(str(i), 0))}\t{(nuc_fwd_ins.get(str(i), 0)+nuc_rev_ins.get(str(i), 0))}\t", file=o, end="")
+				print(f"{(nuc_fwd_mm.get(str(i), 0)+nuc_rev_mm.get(str(i), 0))}\t{(nuc_fwd_tot.get(str(i), 0)+nuc_rev_tot.get(str(i), 0))}\n", file=o, end="")
+				
 if __name__ == "__main__":
 	main()
+
