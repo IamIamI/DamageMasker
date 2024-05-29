@@ -13,7 +13,9 @@ The second approach is what we call 'Edge Masking', where only a fixed number of
 
 The last approach is a reference guide approach where we also supply the reference genome to which the reads were mapped, and we only mask 'T' on the forward strand if the reference sequence has a 'C', and mask the 'A' on the reverse strand if the reference sequence has a 'G'. Although here we assume to know which nucleotides are damage, and will also delete biological C>T, the forward strand 'A' and reverse strand 'T' will still be able to corroborate the genotype if it's biological. Although we do expect that 'C'>'T'/'G'>'A' sites will drop substatially in coverage compared to all other sides, and with low coverage samples might result in a bias during SNP calling. When generating phylogenies we have seen some strange behaviour with this method, and it might be more suited for higher coverage genomes with substantial damage. 
 
-Masking just replaces the nucleotide with an 'N' which does not affect GATK's UnifiedGenotyper when calling genotypes, but might cause problems in other software packages, so use this software at your own discression. 
+Additionally, an option is added to only apply the length and mapq filtering parameters. Although this is likely not usefull for the audience interested in damage, it can be usefull to just reduce the overall sam/bam files by removing unmapped reads and those that are too short or have low quality mapping.
+
+Masking just replaces the nucleotide with an 'N' which does not affect GATK's UnifiedGenotyper when calling genotypes, but might cause problems in other untested software packages, so use this software at your own discression. 
   
 This script has error handling for most thinkable scenario's and should be relatively easy to run as followed:
 - Use case: When setting to hardmasking, al T's on the forward strand and all A's on the reverse strand are masked regardless of anything else  
@@ -26,20 +28,24 @@ Example: ```python DamageMasker.py --input_file Sample.processed.bam --masking H
 Example: ```python DamageMasker.py --input_file Sample.processed.bam --masking E --edge_count 3 --output_file Sample_Edgemasked.bam```  
   
 - Use case: The user can also remove reads that are too short (default 0bp), or are not mapping with a high enough MapQ score (default 0)  
-Example: ```python DamageMasker.py --input_file Sample.processed.bam --output_file Sample_Hardmasked_Filtered.bam --mapq_cutoff 37 --len_cutoff 25```  
-  
+Example: ```python DamageMasker.py --input_file Sample.processed.bam --output_file Sample_Hardmasked_Filtered.bam --masking F --mapq_cutoff 37 --len_cutoff 25```
+
+- Use case: Damage masking and short read removal etc can be easily combined 
+Example: ```python DamageMasker.py --input_file Sample.processed.bam --output_file Sample_Hardmasked_Filtered.bam -masking E --edge_count 3 --mapq_cutoff 37 --len_cutoff 25```
+
+
 The sofware has an overview of all options which can be called upon by typing 'python SSLib_Masker.py -h' or 'python SSLib_Masker.py --help'  
   
 An overview of the options are as followed:  
 ```
 options:
-  -m , --masking       Change masking behaviour. 'R' for Reference based Masking. 'H' for HardMasking. 'E' for EdgeMasking. (default: Hardmasking)
+  -m , --masking       Change masking behaviour. 'R' for Reference based Masking. 'H' for HardMasking. 'E' for EdgeMasking. 'F' for only Filtering. (default: Hardmasking)
   -i , --input_file    Input BAM or SAM file (mandatory)
   -r , --ref_file      Input reference genome file in FASTA format (mandatory for --masking 'R')
   -e , --edge_count    Number of 5' edges to be masked if --masking 'E' is turned on (default: 5)
   -q , --mapq_cutoff   MAPQ cutoff value (default: 0)
   -l , --len_cutoff    Ignore reads below a certain length (default: 0)
-  -o , --output_file   Output SAM file with modified reads (default: 'output_modified.sam')
+  -o , --output_file   Output SAM file with modified reads (default: 'output_modified.sam/.bam')
   -h, --help           Show this help message and exit.
 ```
 
