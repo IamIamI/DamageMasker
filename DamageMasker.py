@@ -187,13 +187,13 @@ def process_sam_bam(in_file, out_file, input_file, ref_file, output_file, mapq_c
 
 def main():
 	parser = argparse.ArgumentParser(description='Mask a SAM/BAM file for deaminated bases based on reference genome. The script can softmask, hardmask and edgemask', add_help=False)
-	parser.add_argument('-m', '--masking', default="H", metavar='', help='Change masking behaviour.\n\'R\' for Reference based Masking.\n\'H\' for HardMasking.\n\'E\' for EdgeMasking. (default: Hardmasking)\n\'F\' for Filtering.')
+	parser.add_argument('-m', '--masking', default="H", metavar='', help='Change masking behaviour.\n\'R\' for Reference based Masking.\n\'H\' for HardMasking.\n\'E\' for EdgeMasking.\n\'F\' for Filtering. (default: Hardmasking)\n')
 	parser.add_argument('-i', '--input_file', metavar='', help='Input BAM or SAM file (mandatory)')
 	parser.add_argument('-r', '--ref_file', default="NA", metavar='', help='Input reference genome file in FASTA format (mandatory for --masking \'R\')')
-	parser.add_argument('-e', '--edge_count', type=int, default=5, metavar='', help='Number of 5\' edges to be masked if --masking \'E\' is turned on (default: 5)')
-	parser.add_argument('-q', '--mapq_cutoff', type=int, default=0, metavar='', help='MAPQ cutoff value (default: 0)')
-	parser.add_argument('-l', '--len_cutoff', type=int, default=0, metavar='', help='Ignore reads below a certain length (default: 0)')
-	parser.add_argument('-o', '--output_file', metavar='', default='output_modified.sam', help='Output SAM file with modified reads (default: \'output_modified.sam\')')
+	parser.add_argument('-e', '--edge_count', type=int, default=5, metavar='', help='Number of bases to be masked from 5\' and 3\' edges if --masking \'E\' is turned on (default: 5)')
+	parser.add_argument('-q', '--mapq_cutoff', type=int, default=0, metavar='', help='Remove reads below MAPQ cutoff value from output (default: 0)')
+	parser.add_argument('-l', '--len_cutoff', type=int, default=0, metavar='', help='Remove reads below a certain length from output (default: 0)')
+	parser.add_argument('-o', '--output_file', metavar='', default='output_modified.sam', help='Output SAM/BAM file with modified reads (default: \'output_modified.sam/.bam\')')
 	parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, help='Show this help message and exit.')
 	args = parser.parse_args()
 
