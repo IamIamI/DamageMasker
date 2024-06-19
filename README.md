@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Damage_Masker_logo.jpg" width="800"/>
+  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Damage_Masker_logo.jpg" width="600"/>
 </p>
 
 
