@@ -1,4 +1,6 @@
-[<img src="https://github.com/IamIamI/DamageMasker/blob/main/Damage_Masker_logo.jpg" width="400"/>]
+<p align="center">
+  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Damage_Masker_logo.jpg" width="800"/>
+</p>
 
 
 DamageMasker is written for Python 3 and uses the biopython and pysam libraries which can easily be installed by running ```pip install biopython``` and ```pip install pysam``` or using a conda environment. 
