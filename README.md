@@ -2,12 +2,10 @@
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Damage_Masker_logo.jpg" width="600"/>
 </p>
 
-
-DamageMasker is written for Python 3 and uses the biopython and pysam libraries which can easily be installed by running ```pip install biopython``` and ```pip install pysam``` or using a conda environment. 
-If Python 3 is installed under python 3 then use ```pip3 install biopython``` and ```pip3 install pysam```.
-
-This tool is intended to be used on singel stranded (SS) libraries that have ancient "damage" (deaminated cytosines), and are not UDG treated.
+```DamageMasker``` is intended to be used on singel stranded (SS) libraries that have ancient "damage" (deaminated cytosines), and are not UDG treated.
 This tool can mask forward strand 'T' and reverse strand 'A' in Sam/Bam files. The intended goal is to mask damage from the reads and prevent it from showing up as biological genotypes or prevent real biological genotypes from being called due to hetrozygocity.  
+
+This tool is written for Python 3 and uses the biopython and pysam libraries which can easily be installed by running ```pip install biopython``` (or ```pip3 install biopython```) and ```pip install pysam``` (or```pip3 install pysam```) or using a conda environment as below. 
   
 Since the single stranded libraries are not synthetically amplified yet, they are assumed to not have artefactually complemented 'C'>'T'>'A' changes, and instead only have natural deamination artefacts. This means it's possible to mask elements that appear as damage based on the strand that exhibits it.  
   
