@@ -2,12 +2,19 @@
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Damage_Masker_logo.jpg" width="600"/>
 </p>
 
-```DamageMasker``` is intended to be used on singel stranded (SS) libraries that have ancient "damage" (deaminated cytosines), and are not UDG treated.
-This tool can mask forward strand 'T' and reverse strand 'A' in Sam/Bam files. The intended goal is to mask damage from the reads and prevent it from showing up as biological genotypes or prevent real biological genotypes from being called due to hetrozygocity.  
+```DamageMasker``` is intended to be used to mask thymine and adenine sites in ancient SAM/BAM files, to prevent damage from being incorporated into genotyping.
+
+Offers the following mapping strategies:
+		Hardmasking (option -m 'H'): mask all Ts on forward mapped reads, all A's on reverse mapped reads
+		Edgemasking (option -m 'E'): mask all Ts on the 5' edge of the forward reads, and A's on the 5' edge of the reverse reads. The user can set how many nucleotides into the read will be masked by setting a value with options -e or --edge_count
+  
+Allows reference guidance by supplying a path to a reference file using the -r or --ref_file option.
+
+Allows masking of single stranded libraries (only mask on the 5') and double stranded libraries (mask both from the 3' and 5' of the read) using the option -s or --strandness. 
+ 	Single stranded libraries will only trim T's on the forward read, and A's on the reverse read. Hardmasking with double stranded libraries will result in ~25% data loss. Edgemasking mitigates this loss substantially.
+ 	Double stranded libraries will trim both T's and A's on both forward and reverse reads. Hardmasking with double stranded libraries will therefore result in ~50% data loss. Edgemasking mitigates this loss substantially.
 
 This tool is written for Python 3 and uses the biopython and pysam libraries which can easily be installed by running ```pip install biopython``` (or ```pip3 install biopython```) and ```pip install pysam``` (or```pip3 install pysam```) or using a conda environment as below. 
-  
-Since the single stranded libraries are not synthetically amplified yet, they are assumed to not have artefactually complemented 'C'>'T'>'A' changes, and instead only have natural deamination artefacts. This means it's possible to mask elements that appear as damage based on the strand that exhibits it.  
   
 There are three approaches, the most logical but also harshest is to mask all the 'T' on the forward strand and the 'A' on the reverse strand as we cannot determine which 'T' are biological and which artefactual, we call this 'Hard Masking'.  
 
@@ -35,16 +42,18 @@ Example: ```python DamageMasker.py --input_file Sample.processed.bam --output_fi
 - Use case: Damage masking and short read removal etc can be easily combined 
 Example: ```python DamageMasker.py --input_file Sample.processed.bam --output_file Sample_Hardmasked_Filtered.bam -masking E --edge_count 3 --mapq_cutoff 37 --len_cutoff 25```
 
+Since the single stranded libraries are not synthetically amplified yet, they are assumed to not have artefactually complemented 'C'>'T'>'A' changes, and instead only have natural deamination artefacts. This means it's possible to mask elements that appear as damage based on the strand that exhibits it. Hardmasking using the single stranded library approach is estimated to result in ~25% data loss, this can be reduced by using the Edgemasking approach instead or taking advantage of the reference guided masking.
 
-The sofware has an overview of all options which can be called upon by typing 'python SSLib_Masker.py -h' or 'python SSLib_Masker.py --help'  
+The sofware has an overview of all options which can be called upon by typing 'python ```python DamageMasker.py -h``` or ```python DamageMasker.py --help```.  
   
 An overview of the options are as followed:  
 ```
 options:
-  -m , --masking       Change masking behaviour. 'R' for Reference based Masking. 'H' for HardMasking. 'E' for EdgeMasking. 'F' for only Filtering. (default: Hardmasking)
+  -m , --masking       Change masking behaviour. 'H' for HardMasking. 'E' for EdgeMasking. 'F' for only Filtering. (default: Hardmasking)
   -i , --input_file    Input BAM or SAM file (mandatory)
-  -r , --ref_file      Input reference genome file in FASTA format (mandatory for --masking 'R')
+  -s', '--strandness   Determine strandness of dataset, 'S' for single stranded libraries, and 'D' for double stranded libraries (default: S, for sslib)
   -e , --edge_count    Number of 5' edges to be masked if --masking 'E' is turned on (default: 5)
+  -r , --ref_file      Give the path to a reference genome file if you want to turn on reference guidance (default: turned off)
   -q , --mapq_cutoff   MAPQ cutoff value (default: 0)
   -l , --len_cutoff    Ignore reads below a certain length (default: 0)
   -o , --output_file   Output SAM file with modified reads (default: 'output_modified.sam/.bam')
