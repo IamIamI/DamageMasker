@@ -104,7 +104,7 @@ An overview of the expected results of each method
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Examples_Masking_impact.jpg" width="800"/>
 </p>
 Figure 4. Example results that masking can yield depending on the situation of a given position. High coverage data will benefit more from harsher mapping strategies, while lower coverage data will benefit more from edge masking in combination with reference guidance. However, outlier will stil exist and legitimate SNPs can still be lost. 
-
+<br><br/>
 The resulting Damage patterns that are to be expected from each masking type can be seen below
 <p align="center">
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Examples_Damage_Plots.jpg" width="800"/>
