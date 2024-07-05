@@ -4,7 +4,7 @@
 
 ***```DamageMasker``` is a lightweight python based tool usefull for masking damaged sites in ancient SAM/BAM files, to prevent it from being incorporated into genotyping.***
 
-##Overview
+## Overview
 
 ```DamageMasker``` is a small tool written in Python3, using the Pysam and BioPython libraries.
 It's designed to mask sequencing artefacts derived from deaminated cytosines, a common feature of DNA damage.
@@ -14,7 +14,7 @@ these deaminated cytocines can be complimented with a adenine instead of a guani
 
 
 <p align="center">
-  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Deamination.png" width="600"/>
+  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Deamination.jpg" width="600"/>
 </p>
 Figure 1. Depiction of the cause and effect of deamination of a cytosine. A) A depiction of a small portion of a DNA molecule. B) Structural illustration of the two base pairs, C-G and T-A and their respective hydrogen bonds. C) A step-by-step illustration of what deamination entails and how it can result in mutations or in the case of aDNA, misincorporations by polymerases. D) The process by which an uracil-DNA glycosylase (UDG) enzyme can remove deaminated cytosines (uracil) from the DNA backbone, which in turn results in a cleavage of the strand when amplification or repair of the molecule occurs. Adapted from [3D DNA model by Holoxica hosted by sketchfab](https://skfb.ly/68N7T) under a CC license.
 
@@ -24,7 +24,7 @@ wrong genotype calls (Ts where there should have been Cs), or loss of stable gen
 ```DamageMasker``` is intended as a soft sollution to this problem if UDG treatment is not used during library creation. 
 
 
-##Instalation
+## Instalation
 
 This tool is written for Python 3 and uses the biopython and pysam libraries.
 biopython and pysam can be easily by running ```pip install biopython``` (or ```pip3 install biopython```) and ```pip install pysam``` (or```pip3 install pysam```). 
@@ -34,7 +34,7 @@ Or the python script can be downloaded directly using wget by typing ```wget htt
 
 conda is WIP
 
-##Features
+## Features
 
 ```DamageMasker``` offers the following mapping strategies:
 
@@ -81,7 +81,7 @@ Most options can be combined in order to achieve the users goal.
 </p>
 Figure 3. An overview of the impact different combination of settings can have when running ```DamageMasker```
 
-##Expected results
+## Expected results
 
 An overview of the expected results of each method
 <p align="center">
@@ -95,7 +95,7 @@ The resulting Damage patterns that are to be expected from each masking type can
 </p>
 Figure 5. Example damage patterns that can be expected when using ```DamageMasker```.
 
-##Example parameters
+## Example parameters
 
 - Use case: When setting to hardmasking, al T's on the forward strand and all A's on the reverse strand are masked regardless of anything else  
 Example: ```python DamageMasker.py --input_file Sample.processed.bam --masking H --output_file Sample_Hardmasked.bam```  
