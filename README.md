@@ -18,20 +18,22 @@ these deaminated cytocines can be complimented with a adenine instead of a guani
 <p align="center">
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Deamination.jpg" width="800"/>
 </p>
-Figure 1. Depiction of the cause and effect of deamination of a cytosine. A) A depiction of a small portion of a DNA molecule. B) Structural illustration of the two base pairs, C-G and T-A and their respective hydrogen bonds. C) A step-by-step illustration of what deamination entails and how it can result in mutations or in the case of aDNA, misincorporations by polymerases. D) The process by which an uracil-DNA glycosylase (UDG) enzyme can remove deaminated cytosines (uracil) from the DNA backbone, which in turn results in a cleavage of the strand when amplification or repair of the molecule occurs. Adapted from [3D DNA model by Holoxica hosted by sketchfab](https://skfb.ly/68N7T) under a CC license.
+Figure 1. Depiction of the cause and effect of deamination of a cytosine. A) A depiction of a small portion of a DNA molecule. B) Structural illustration of the two base pairs, C-G and T-A and their respective hydrogen bonds. C) A step-by-step illustration of what deamination entails and how it can result in mutations or in the case of aDNA, misincorporations by polymerases. D) The process by which an uracil-DNA glycosylase (UDG) enzyme can remove deaminated cytosines (uracil) from the DNA backbone, which in turn results in a cleavage of the strand when amplification or repair of the molecule occurs.\
+Adapted from [3D DNA model by Holoxica hosted by sketchfab](https://skfb.ly/68N7T) under a CC license.
+[Duck Duck Go](https://duckduckgo.com)
 
 <br><br/>
-This process leads to the replacement of cytosines to thymines in a subset of reads through a adenine complementation.\ 
-When mapping these C>T (or the G>A reverse compliment) reads to a reference genome, these can cause mismapping (loss of mappable reads),\ 
+This process leads to the replacement of cytosines to thymines in a subset of reads through a adenine complementation.\
+When mapping these C>T (or the G>A reverse compliment) reads to a reference genome, these can cause mismapping (loss of mappable reads),\
 wrong genotype calls (Ts where there should have been Cs), or loss of stable genotypes due to hetrogeneity during SNP calling.\
-```DamageMasker``` is intended as a soft sollution to this problem if UDG treatment is not used during library creation.\ 
+```DamageMasker``` is intended as a soft sollution to this problem if UDG treatment is not used during library creation.\
 
 
 ## Instalation
 
 This tool is written for Python 3 and uses the biopython and pysam libraries.\
-biopython and pysam can be easily by running ```pip install biopython``` (or ```pip3 install biopython```)\ 
-and ```pip install pysam``` (or```pip3 install pysam```).\ 
+biopython and pysam can be easily by running ```pip install biopython``` (or ```pip3 install biopython```)\
+and ```pip install pysam``` (or```pip3 install pysam```).\
 
 The ```DamageMasker``` can be simply cloned using git ```git clone https://github.com/IamIamI/DamageMasker.git```.\
 Or the python script can be downloaded directly using wget by typing ```wget https://raw.githubusercontent.com/IamIamI/DamageMasker/main/DamageMasker.py```\
@@ -53,27 +55,23 @@ Edgemasking (```-m E```): 	Mask all Ts on the 5' edge of the forward reads, and 
 **Reference guidance:**\
 Allows reference guidance by supplying a path to the reference file used in the mapping by supplying the path to it with the ```-r``` or ```--ref_file``` option.\
 For example: ```--ref_file genome.fasta```.
-
 <br><br/>
 **Library support:**\
 Single stranded (```-s S```):		This will assume damage presents itself as Ts on forward mapped reads, and As on Reverse mapped reads. 		
 > [!CAUTION]
 > When combining this with Hardmasking, expect a 25% data loss (all Ts on Forward, all As on reverse).
 
-
 Double stranded (```-s D```):		This will assume damage presents itself as both Ts on 5' side and As on 3' sides forward mapped reads, and As on the 5' side and Ts on the 3' side of reverse mapped reads. 
 > [!CAUTION]
 > When combining this with Hardmasking, expect a complete loss of As and Ts, and should likely not be used.
-
 <br><br/>
 **Read Filtering:**\
 An additional feature is present which can filter reads that are either too short by setting a minimum length (in bp) cuttoff using the option ```-l``` or ```--len_cutoff``` followed by a value,
 or remove reads from the output that have too low of a MapQ score using the option ```-q``` or ```--mapq_cutoff``` followed by a value.\
 For example: ```--mapq_cutoff 20 --len_cutoff 35```
-
 <br><br/>
 The sofware has an overview of all options which can be called upon by typing 'python ```python DamageMasker.py -h``` or ```python DamageMasker.py --help```.\
-  
+
 An overview of the options are as followed:  
 ```
 options:
