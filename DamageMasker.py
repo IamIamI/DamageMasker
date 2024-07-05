@@ -115,7 +115,12 @@ def process_sam_bam(in_file, out_file, input_file, ref_file, output_file, mapq_c
 
 			if not ref_file =="NA" and not masking == "F" :
 				# Load the reference sequence
-				reference_seq = reference_dict[read.reference_name][read.reference_start:read.reference_end] # Get reference sequence
+				try:
+					reference_seq = reference_dict[read.reference_name][read.reference_start:read.reference_end] # Get reference sequence
+				except:
+					print(f"\nError: It appears either the Reference file {ref_file} is not formatted as a FASTA file, or the header does not match that of the supplied SAM/BAM file.")
+					print(f"Please make sure the reference file is the same as the one used in your mapping strategy that produced the SAM/BAM file.\n\n")
+					sys.exit(1)
 
 				# Deal with indels (annoying!!!)
 				if len(read.cigartuples)>1 :
@@ -240,7 +245,7 @@ def process_sam_bam(in_file, out_file, input_file, ref_file, output_file, mapq_c
 def main() :
 	parser = argparse.ArgumentParser(description='Mask a SAM/BAM file for deaminated bases based on reference genome. The script can softmask, hardmask and edgemask', add_help=False)
 	parser.add_argument('-m', '--masking', default="H", metavar='', help='Change masking behaviour.\n\'H\' for HardMasking.\n\'E\' for EdgeMasking.\n\'F\' for Filtering. (default: Hardmasking)\n')
-	parser.add_argument('-i', '--input_file', metavar='', help='Input BAM or SAM file (mandatory)')
+	parser.add_argument('-i', '--input_file', default="NA", metavar='', help='Input BAM or SAM file (mandatory)')
 	parser.add_argument('-s', '--strandness', default="S", metavar='', help='Determine strandness of dataset, \'S\' for single stranded libraries, and \'D\' for double stranded libraries (default: S, for sslib)')
 	parser.add_argument('-e', '--edge_count', type=int, default=5, metavar='', help='Number of bases to be masked from 5\' and 3\' edges if --masking \'E\' is turned on (default: 5)')
 	parser.add_argument('-r', '--ref_file', default="NA", metavar='', help='Give the path to a reference genome file if you want to turn on reference guidance (default: turned off)')
@@ -248,22 +253,33 @@ def main() :
 	parser.add_argument('-l', '--len_cutoff', type=int, default=0, metavar='', help='Remove reads below a certain length from output (default: 0)')
 	parser.add_argument('-o', '--output_file', metavar='', default='output_modified.sam', help='Output SAM/BAM file with modified reads (default: \'output_modified.sam/.bam\')')
 	parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, help='Show this help message and exit.')
-	args = parser.parse_args()
 
-	# Check if the input BAM file exists
-	if not os.path.exists(args.input_file) :
-		print(f"\nError: Input SAM/BAM file '{args.input_file}' not found.\n\n")
-		return
+	# Check if at least one option is given, if not close the program and prompt the help screen again
+	if len(sys.argv)==1:
+		print(f"\nError: No options were supplied.\n")
+		parser.print_help(sys.stderr)
+		sys.exit(1)
+	args = parser.parse_args()
+	
+	if args.input_file != "NA":
 		# Check if the input BAM file exists
-	extention_test = args.input_file.lower()
-	if '.sam' in extention_test :
-		if not args.output_file.endswith(".sam") :
-			args.output_file += ".sam"
-	elif '.bam' in extention_test :
-		if not args.output_file.endswith(".bam") :
-			args.output_file += ".bam"
-	else :
-		print(f"\nError: It could not be determined if '{input_file}' is a SAM or BAM formatted file. Make sure the file has a .sam or .bam extention.\n\n")
+		if not os.path.exists(args.input_file) :
+			print(f"\nError: Input SAM/BAM file '{args.input_file}' not found.\n\n")
+			return
+			# Check if the input BAM file exists
+		extention_test = args.input_file.lower()
+		if '.sam' in extention_test :
+			if not args.output_file.endswith(".sam") :
+				args.output_file += ".sam"
+		elif '.bam' in extention_test :
+			if not args.output_file.endswith(".bam") :
+				args.output_file += ".bam"
+		else :
+			print(f"\nError: It could not be determined if '{input_file}' is a SAM or BAM formatted file. Make sure the file has a .sam or .bam extention.\n\n")
+			sys.exit(1)
+	else:
+		print(f"\nError: No input file was given, this is a mandatory argument as the software cannot do anything without an input file.")
+		print(f"Please specify an input SAM or BAM file using the -i or --input_file option, followed by the path to your file.\n\n")
 		sys.exit(1)
 
 	settings_summary_printer(args)
