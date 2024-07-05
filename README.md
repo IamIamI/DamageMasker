@@ -2,11 +2,7 @@
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Damage_Masker_logo.jpg" width="600"/>
 </p>
 
-# ![Damage_Masker](https://github.com/IamIamI/DamageMasker/blob/main/Damage_Masker_logo.jpg)
-
-
 ***```DamageMasker``` is a lightweight python based tool usefull for masking damaged sites in ancient SAM/BAM files, to prevent it from being incorporated into genotyping.***
-
 
 ##Overview
 
@@ -37,7 +33,6 @@ The ```DamageMasker``` can be simply cloned using git ```git clone https://githu
 Or the python script can be downloaded directly using wget by typing ```wget https://raw.githubusercontent.com/IamIamI/DamageMasker/main/DamageMasker.py```
 
 conda is WIP
-
 
 ##Features
 
@@ -82,10 +77,9 @@ options:
 Most options can be combined in order to achieve the users goal. 
 
 <p align="center">
-  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Examples_Masking_impact.jpg" width="600"/>
+  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/DamageMasker_examples.jpg" width="600"/>
 </p>
 Figure 3. An overview of the impact different combination of settings can have when running ```DamageMasker```
-
 
 ##Expected results
 
@@ -100,7 +94,6 @@ The resulting Damage patterns that are to be expected from each masking type can
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/DamagePlots.jpg" width="600"/>
 </p>
 Figure 5. Example damage patterns that can be expected when using ```DamageMasker```.
-
 
 ##Example parameters
 
