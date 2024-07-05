@@ -38,33 +38,34 @@ conda is WIP
 
 ```DamageMasker``` offers the following mapping strategies:
 
-Masking:
-    Hardmasking (```-m H```): 	
-    	Mask all Ts on forward mapped reads, all A's on reverse mapped reads
-    Edgemasking (```-m E```): 	
-    	Mask all Ts on the 5' edge of the forward reads, and A's on the 5' edge of the reverse reads. 
-  	The user can set how many nucleotides into the read will be masked by setting a 
-	value with options ```-e``` or ```--edge_count```
+# Masking:
+  _Hardmasking (```-m H```): 	
+Mask all Ts on forward mapped reads, all A's on reverse mapped reads
+
+# Edgemasking (```-m E```): 	
+  _Mask all Ts on the 5' edge of the forward reads, and A's on the 5' edge of the reverse reads. 
+	The user can set how many nucleotides into the read will be masked by setting a value with options ```-e``` or ```--edge_count```
  
 Reference guidance:
-    Allows reference guidance by supplying a path to the reference file used in the mapping by supplying the path to it with the ```-r``` or ```--ref_file``` option.
-    For example: ```--ref_file genome.fasta```.
+Allows reference guidance by supplying a path to the reference file used in the mapping by supplying the path to it with the ```-r``` or ```--ref_file``` option.
+For example: ```--ref_file genome.fasta```.
   
 Library support:
-    Single stranded (-s S):		
-    	This will assume damage presents itself as Ts on forward mapped reads, and As on Reverse mapped reads. 		
-      > [!CAUTION]
-      > When combining this with Hardmasking, expect a 25% data loss (all Ts on Forward, all As on reverse).
-    Double stranded (-s D):		
-    	This will assume damage presents itself as both Ts on 5' side and As on 3' sides forward mapped reads,
-  	and As on the 5' side and Ts on the 3' side of reverse mapped reads. 
-      > [!CAUTION]
-      > When combining this with Hardmasking, expect a complete loss of As and Ts, and should likely not be used.
+Single stranded (-s S):		
+This will assume damage presents itself as Ts on forward mapped reads, and As on Reverse mapped reads. 		
+> [!CAUTION]
+> When combining this with Hardmasking, expect a 25% data loss (all Ts on Forward, all As on reverse).
+
+Double stranded (-s D):		
+This will assume damage presents itself as both Ts on 5' side and As on 3' sides forward mapped reads,
+and As on the 5' side and Ts on the 3' side of reverse mapped reads. 
+> [!CAUTION]
+> When combining this with Hardmasking, expect a complete loss of As and Ts, and should likely not be used.
       
 Read Filtering:
-    An additional feature is present which can filter reads that are either too short by setting a minimum length (in bp) cuttoff using the option ```-l``` or ```--len_cutoff``` followed by a value,
-    or remove reads from the output that have too low of a MapQ score using the option ```-q``` or ```--mapq_cutoff``` followed by a value. 
-    For example: ```--mapq_cutoff 20 --len_cutoff 35```
+An additional feature is present which can filter reads that are either too short by setting a minimum length (in bp) cuttoff using the option ```-l``` or ```--len_cutoff``` followed by a value,
+or remove reads from the output that have too low of a MapQ score using the option ```-q``` or ```--mapq_cutoff``` followed by a value. 
+For example: ```--mapq_cutoff 20 --len_cutoff 35```
 
 The sofware has an overview of all options which can be called upon by typing 'python ```python DamageMasker.py -h``` or ```python DamageMasker.py --help```.  
   
