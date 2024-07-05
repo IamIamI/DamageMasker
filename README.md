@@ -12,9 +12,7 @@ It's designed to mask sequencing artefacts derived from deaminated cytosines, a 
 This problem is especially prevalent in ancient DNA, and mostly affects the 5' edges of DNA molecules.\
 Deaminated cytocines function similarly to a uracil, and during the library and amplification process,\
 these deaminated cytocines can be complimented with a adenine instead of a guanine. 
-
 <br><br/>
-
 <p align="center">
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Deamination.jpg" width="800"/>
 </p>
@@ -90,26 +88,28 @@ options:
 ```
 
 Most options can be combined in order to achieve the users goal. 
-
+<br><br/>
 <p align="center">
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/DamageMasker_examples.jpg" width="600"/>
 </p>
-Figure 3. An overview of the impact different combination of settings can have when running ```DamageMasker```.\
+Figure 2. An overview of the impact different combination of settings can have when running ```DamageMasker```.\
 Highlighted nucleotides are preceived as damage by a given parameter.
 
 ## Expected results
 
 An overview of the expected results of each method
+<br><br/>
 <p align="center">
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Examples_Masking_impact.jpg" width="800"/>
 </p>
-Figure 4. Example results that masking can yield depending on the situation of a given position. High coverage data will benefit more from harsher mapping strategies, while lower coverage data will benefit more from edge masking in combination with reference guidance. However, outlier will stil exist and legitimate SNPs can still be lost. 
+Figure 3. Example results that masking can yield depending on the situation of a given position. High coverage data will benefit more from harsher mapping strategies, while lower coverage data will benefit more from edge masking in combination with reference guidance. However, outlier will stil exist and legitimate SNPs can still be lost. 
 <br><br/>
 The resulting Damage patterns that are to be expected from each masking type can be seen below
+<br><br/>
 <p align="center">
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Examples_Damage_Plots.jpg" width="800"/>
 </p>
-Figure 5. Example damage patterns that can be expected when using ```DamageMasker```.
+Figure 4. Example damage patterns that can be expected when using ```DamageMasker```.
 
 ## Example parameters
 
