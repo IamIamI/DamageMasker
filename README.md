@@ -33,10 +33,10 @@ wrong genotype calls (Ts where there should have been Cs), or loss of stable gen
 
 This tool is written for Python 3 and uses the biopython and pysam libraries.\
 biopython and pysam can be easily by running ```pip install biopython``` (or ```pip3 install biopython```)\
-and ```pip install pysam``` (or```pip3 install pysam```).\
+and ```pip install pysam``` (or```pip3 install pysam```).
 
 The ```DamageMasker``` can be simply cloned using git ```git clone https://github.com/IamIamI/DamageMasker.git```.\
-Or the python script can be downloaded directly using wget by typing ```wget https://raw.githubusercontent.com/IamIamI/DamageMasker/main/DamageMasker.py```\
+Or the python script can be downloaded directly using wget by typing ```wget https://raw.githubusercontent.com/IamIamI/DamageMasker/main/DamageMasker.py```
 
 conda is WIP
 
@@ -64,13 +64,13 @@ Single stranded (```-s S```):		This will assume damage presents itself as Ts on 
 Double stranded (```-s D```):		This will assume damage presents itself as both Ts on 5' side and As on 3' sides forward mapped reads, and As on the 5' side and Ts on the 3' side of reverse mapped reads. 
 > [!CAUTION]
 > When combining this with Hardmasking, expect a complete loss of As and Ts, and should likely not be used.
-<br><br/>
+
 **Read Filtering:**\
 An additional feature is present which can filter reads that are either too short by setting a minimum length (in bp) cuttoff using the option ```-l``` or ```--len_cutoff``` followed by a value,
 or remove reads from the output that have too low of a MapQ score using the option ```-q``` or ```--mapq_cutoff``` followed by a value.\
 For example: ```--mapq_cutoff 20 --len_cutoff 35```
 <br><br/>
-The sofware has an overview of all options which can be called upon by typing 'python ```python DamageMasker.py -h``` or ```python DamageMasker.py --help```.\
+The sofware has an overview of all options which can be called upon by typing 'python ```python DamageMasker.py -h``` or ```python DamageMasker.py --help```.
 
 An overview of the options are as followed:  
 ```
@@ -91,7 +91,8 @@ Most options can be combined in order to achieve the users goal.
 <p align="center">
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/DamageMasker_examples.jpg" width="600"/>
 </p>
-Figure 3. An overview of the impact different combination of settings can have when running ```DamageMasker```
+Figure 3. An overview of the impact different combination of settings can have when running ```DamageMasker```.\
+Highlighted nucleotides are preceived as damage by a given parameter.
 
 ## Expected results
 
