@@ -45,12 +45,14 @@ Edgemasking (```-m E```): 	Mask all Ts on the 5' edge of the forward reads, and 
 > [!TIP]
 > The user can set how many nucleotides into the read will be masked by setting a value with options ```-e``` or ```--edge_count```
 
- <br/>
+<br><br/>
+<br><br/>
 ### Reference guidance:
 Allows reference guidance by supplying a path to the reference file used in the mapping by supplying the path to it with the ```-r``` or ```--ref_file``` option.\
 For example: ```--ref_file genome.fasta```.
 
-<br/>
+
+  
 ### Library support:
 Single stranded (```-s S```):		This will assume damage presents itself as Ts on forward mapped reads, and As on Reverse mapped reads. 		
 > [!CAUTION]
@@ -61,13 +63,15 @@ Double stranded (```-s D```):		This will assume damage presents itself as both T
 > [!CAUTION]
 > When combining this with Hardmasking, expect a complete loss of As and Ts, and should likely not be used.
 
-<br/>
+/
+/
 ### Read Filtering:
 An additional feature is present which can filter reads that are either too short by setting a minimum length (in bp) cuttoff using the option ```-l``` or ```--len_cutoff``` followed by a value,
 or remove reads from the output that have too low of a MapQ score using the option ```-q``` or ```--mapq_cutoff``` followed by a value.\
 For example: ```--mapq_cutoff 20 --len_cutoff 35```
 
-<br/>
+&nbsp;
+&nbsp;
 The sofware has an overview of all options which can be called upon by typing 'python ```python DamageMasker.py -h``` or ```python DamageMasker.py --help```.  
   
 An overview of the options are as followed:  
