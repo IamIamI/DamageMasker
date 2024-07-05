@@ -55,6 +55,7 @@ Edgemasking (```-m E```): 	Mask all Ts on the 5' edge of the forward reads, and 
 **Reference guidance:**\
 Allows reference guidance by supplying a path to the reference file used in the mapping by supplying the path to it with the ```-r``` or ```--ref_file``` option.\
 For example: ```--ref_file genome.fasta```.
+
 <br><br/>
 **Library support:**\
 Single stranded (```-s S```):		This will assume damage presents itself as Ts on forward mapped reads, and As on Reverse mapped reads. 		
@@ -65,10 +66,12 @@ Double stranded (```-s D```):		This will assume damage presents itself as both T
 > [!CAUTION]
 > When combining this with Hardmasking, expect a complete loss of As and Ts, and should likely not be used.
 
+<br><br/>
 **Read Filtering:**\
 An additional feature is present which can filter reads that are either too short by setting a minimum length (in bp) cuttoff using the option ```-l``` or ```--len_cutoff``` followed by a value,
 or remove reads from the output that have too low of a MapQ score using the option ```-q``` or ```--mapq_cutoff``` followed by a value.\
 For example: ```--mapq_cutoff 20 --len_cutoff 35```
+
 <br><br/>
 The sofware has an overview of all options which can be called upon by typing 'python ```python DamageMasker.py -h``` or ```python DamageMasker.py --help```.
 
@@ -98,13 +101,13 @@ Highlighted nucleotides are preceived as damage by a given parameter.
 
 An overview of the expected results of each method
 <p align="center">
-  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Examples_Masking_impact.jpg" width="600"/>
+  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Examples_Masking_impact.jpg" width="800"/>
 </p>
 Figure 4. Example results that masking can yield depending on the situation of a given position. High coverage data will benefit more from harsher mapping strategies, while lower coverage data will benefit more from edge masking in combination with reference guidance. However, outlier will stil exist and legitimate SNPs can still be lost. 
 
 The resulting Damage patterns that are to be expected from each masking type can be seen below
 <p align="center">
-  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/DamagePlots.jpg" width="600"/>
+  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Examples_Damage_Plots.jpg" width="800"/>
 </p>
 Figure 5. Example damage patterns that can be expected when using ```DamageMasker```.
 
