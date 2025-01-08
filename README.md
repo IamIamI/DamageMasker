@@ -30,6 +30,7 @@ wrong genotype calls (Ts where there should have been Cs), or loss of stable gen
 </p>
 Figure 2. Overview of damage features in ancient DNA samples. A) A clear example of a "smiley plot", generated using DamageProfiler (Neukamm et al., 2021). This plot representation of the percentage of C>T on the forward strand and G>A on the reverse strand for the entire dataset. This feature is only present in non-UDG samples, however partial-UDG or UDG-half protocols can still leave 1 or 2 bases of damage at the 5' and 3' edges of molecules, thus allowing for validation of ancient DNA while still mitigating some of the problems introduced by it. B) Percentage of damage at the 1st base at the 5' side of a molecules plotted against the proposed C14-date as described in the sample's corresponding manuscript. This plot shows a lack of correlation between damage over time, something that had been previously noted by Kistler et al (2017). C) Damage at the 1st base at the 5' side of a molecules plotted against the average read length of human DNA molecules. This plot suggest that fragmentation and damage are not correlated and likely are a result of different factors. Kistler et al (2017) suggest that this could be a geographical temperature based factor. D) Average read length and average damage distributions.
 <br><br/>
+
 ```DamageMasker``` is intended as a soft sollution to clean some of these damage artefacts post-mapping, on samples where no UDG treatment was used during library creation.\
 
 
