@@ -23,8 +23,14 @@ Adapted from [3D DNA model by Holoxica hosted by sketchfab](https://skfb.ly/68N7
 <br><br/>
 This process leads to the replacement of cytosines to thymines in a subset of reads through a adenine complementation.\
 When mapping these C>T (or the G>A reverse compliment) reads to a reference genome, these can cause mismapping (loss of mappable reads),\
-wrong genotype calls (Ts where there should have been Cs), or loss of stable genotypes due to hetrogeneity during SNP calling.\
-```DamageMasker``` is intended as a soft sollution to this problem if UDG treatment is not used during library creation.\
+wrong genotype calls (Ts where there should have been Cs), or loss of stable genotypes due to hetrogeneity during SNP calling (Figure 2A).\
+<br><br/>
+<p align="center">
+  <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/C14-Perc_plot_v2.jpg" width="800"/>
+</p>
+Figure 2. Overview of damage features in ancient DNA samples. A) A clear example of a "smiley plot", generated using DamageProfiler (Neukamm et al., 2021). This plot representation of the percentage of C>T on the forward strand and G>A on the reverse strand for the entire dataset. This feature is only present in non-UDG samples, however partial-UDG or UDG-half protocols can still leave 1 or 2 bases of damage at the 5' and 3' edges of molecules, thus allowing for validation of ancient DNA while still mitigating some of the problems introduced by it. B) Percentage of damage at the 1st base at the 5' side of a molecules plotted against the proposed C14-date as described in the sample's corresponding manuscript. This plot shows a lack of correlation between damage over time, something that had been previously noted by Kistler et al (2017). C) Damage at the 1st base at the 5' side of a molecules plotted against the average read length of human DNA molecules. This plot suggest that fragmentation and damage are not correlated and likely are a result of different factors. Kistler et al (2017) suggest that this could be a geographical temperature based factor. D) Average read length and average damage distributions.
+
+```DamageMasker``` is intended as a soft sollution to clean some of these damage artefacts post-mapping, on samples where no UDG treatment was used during library creation.\
 
 
 ## Instalation
@@ -62,7 +68,7 @@ Single stranded (```-s S```):		This will assume damage presents itself as Ts on 
 
 Double stranded (```-s D```):		This will assume damage presents itself as both Ts on 5' side and As on 3' sides forward mapped reads, and As on the 5' side and Ts on the 3' side of reverse mapped reads. 
 > [!CAUTION]
-> When combining this with Hardmasking, expect a complete loss of As and Ts, and should likely not be used.
+> When combining this with Hardmasking, expect a 50% data loss (complete loss of As and Ts), and should likely not be used.
 
 <br><br/>
 **Read Filtering:**\
@@ -102,7 +108,7 @@ An overview of the expected results of each method
 <p align="center">
   <img src="https://github.com/IamIamI/DamageMasker/blob/main/Images/Examples_Masking_impact.jpg" width="800"/>
 </p>
-Figure 3. Example results that masking can yield depending on the situation of a given position. High coverage data will benefit more from harsher mapping strategies, while lower coverage data will benefit more from edge masking in combination with reference guidance. However, outlier will stil exist and legitimate SNPs can still be lost. 
+Figure 3. Example results that masking can yield depending on the situation of a given position. Gained SNPs: removal of damage will remove hetrozygocity and increase the number of "True" SNPs. Cleaned sites: low coverage sites where damage is present can result in a false positive SNP, removal of this damage can result in loss of False positive SNP calls. Edge Masked saved sites: Not all C>T and G>A substitutions are damage, given that damage predominantly occurs on edges, the removal of only C>T and G>A substitutions on the edges of reads allows for removal of damage while keeping C>T and G>A signals that are likely "True" SNPs. Loss of SNPs: The removal of C>T and G>A in lower coverage samples will always lead to some loss of true positives, however whether this loss is outweighed by the gain of true positives and removal of false positives depends on the individual sample. High coverage data will benefit more from harsher mapping strategies, while lower coverage data will benefit more from edge masking in combination with reference guidance. However, outlier will stil exist and legitimate SNPs can still be lost. 
 <br><br/>
 The resulting Damage patterns that are to be expected from each masking type can be seen below
 <br><br/>
