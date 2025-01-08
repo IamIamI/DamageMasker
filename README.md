@@ -60,16 +60,20 @@ Edgemasking (```-m E```): 	Mask all Ts on the 5' edge of the forward reads, and 
 **Reference guidance:**\
 Allows reference guidance by supplying a path to the reference file used in the mapping by supplying the path to it with the ```-r``` or ```--ref_file``` option.\
 For example: ```--ref_file genome.fasta```.
+> [!TIP]
+> Reference guidance is an optional feature that can be combined with either Hardmasking or Edgemasking, allowing for a bit of flexibility.
 
 <br><br/>
 **Library support:**\
 Single stranded (```-s S```):		This will assume damage presents itself as Ts on forward mapped reads, and As on Reverse mapped reads. 		
 > [!CAUTION]
 > When combining this with Hardmasking, expect a 25% data loss (all Ts on Forward, all As on reverse).
-
-Double stranded (```-s D```):		This will assume damage presents itself as both Ts on 5' side and As on 3' sides forward mapped reads, and As on the 5' side and Ts on the 3' side of reverse mapped reads. 
+> When combining this with Edgemasking, it will consider Ts on 5' side and As on the 5' side of reverse mapped reads to be damage.
+> 
+Double stranded (```-s D```):		This will assume damage presents itself as Ts and As on both the 5' and the 3' of forward and reverse reads. 
 > [!CAUTION]
 > When combining this with Hardmasking, expect a 50% data loss (complete loss of As and Ts), and should likely not be used.
+> When combining this with Edgemasking, it will consider Ts on 5' side and As on 3' sides forward mapped reads and As on the 5' side and Ts on the 3' side of reverse mapped reads to be damage. 
 
 <br><br/>
 **Read Filtering:**\
@@ -85,7 +89,7 @@ An overview of the options are as followed:
 options:
   -m , --masking       Change masking behaviour. 'H' for HardMasking. 'E' for EdgeMasking. 'F' for only Filtering. (default: Hardmasking)
   -i , --input_file    Input BAM or SAM file (mandatory)
-  -s', '--strandness   Determine strandness of dataset, 'S' for single stranded libraries, and 'D' for double stranded libraries (default: S, for sslib)
+  -s', --strandness   Determine strandness of dataset, 'S' for single stranded libraries, and 'D' for double stranded libraries (default: S, for sslib)
   -e , --edge_count    Number of 5' edges to be masked if --masking 'E' is turned on (default: 5)
   -r , --ref_file      Give the path to a reference genome file if you want to turn on reference guidance (default: turned off)
   -q , --mapq_cutoff   MAPQ cutoff value (default: 0)
