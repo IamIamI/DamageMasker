@@ -22,7 +22,7 @@ Adapted from [3D DNA model by Holoxica hosted by sketchfab](https://skfb.ly/68N7
 
 <br><br/>
 This process leads to the replacement of cytosines to thymines in a subset of reads through a adenine complementation.\
-When mapping these C>T (or the G>A reverse compliment) reads to a reference genome, these can cause mismapping (loss of mappable reads),\
+When mapping these C>T (or the G>A reverse compliment) reads to a reference genome, these can cause mismapping (loss of mappable reads), 
 wrong genotype calls (Ts where there should have been Cs), or loss of stable genotypes due to hetrogeneity during SNP calling (Figure 2A).\
 <br><br/>
 <p align="center">
