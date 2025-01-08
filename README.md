@@ -67,12 +67,14 @@ For example: ```--ref_file genome.fasta```.
 **Library support:**\
 Single stranded (```-s S```):		This will assume damage presents itself as Ts on forward mapped reads, and As on Reverse mapped reads. 		
 > [!CAUTION]
-> When combining this with Hardmasking, expect a 25% data loss (all Ts on Forward, all As on reverse).\\
+> When combining this with Hardmasking, expect a 25% data loss (all Ts on Forward, all As on reverse).
+> [!CAUTION]
 > When combining this with Edgemasking, it will consider Ts on 5' side and As on the 5' side of reverse mapped reads to be damage.
 
 Double stranded (```-s D```):		This will assume damage presents itself as Ts and As on both the 5' and the 3' of forward and reverse reads. 
 > [!CAUTION]
-> When combining this with Hardmasking, expect a 50% data loss (complete loss of As and Ts), and should likely not be used.\\
+> When combining this with Hardmasking, expect a 50% data loss (complete loss of As and Ts), and should likely not be used.
+> [!CAUTION]
 > When combining this with Edgemasking, it will consider Ts on 5' side and As on 3' sides forward mapped reads and As on the 5' side and Ts on the 3' side of reverse mapped reads to be damage. 
 
 <br><br/>
